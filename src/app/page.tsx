@@ -50,7 +50,10 @@ export default async function HomePage() {
                   : undefined
               }
             />
-            <div aria-hidden className="absolute inset-0 bg-black/40" />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-linear-to-t from-black/95 via-black/55 to-black/15"
+            />
           </>
         ) : (
           <div
@@ -105,7 +108,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <ul className="mt-14 flex flex-wrap gap-x-7 gap-y-2 text-[10px] uppercase tracking-[0.26em] text-white/35">
+          <ul className="mt-14 hidden flex-wrap gap-x-7 gap-y-2 text-[10px] uppercase tracking-[0.26em] text-white/40 md:flex">
             {categories.map((category) => (
               <li key={category.slug}>{category.name}</li>
             ))}
@@ -116,7 +119,7 @@ export default async function HomePage() {
           <span className="text-[9px] uppercase tracking-[0.32em] text-white/35">
             Scroll
           </span>
-          <span className="h-10 w-px bg-gradient-to-b from-white/35 to-transparent" />
+          <span className="h-10 w-px bg-linear-to-b from-white/35 to-transparent" />
         </div>
       </section>
 

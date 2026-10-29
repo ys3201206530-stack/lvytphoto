@@ -39,7 +39,7 @@ export function PhotoTile({ photo, eager = false }: { photo: PublicPhoto; eager?
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.04]"
       />
 
-      <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-95 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100" />
+      <span className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent opacity-95 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100" />
 
       <span className="pointer-events-none absolute inset-x-0 bottom-0 p-4 transition-all duration-500 md:translate-y-2 md:p-5 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
         <span className="block text-sm tracking-wide text-paper">{photo.title}</span>
