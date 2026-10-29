@@ -14,12 +14,12 @@ export default async function AdminHomePage() {
     {
       title: "上传作品",
       detail: "浏览器内压成三档 WebP，直传 Supabase 存储，带进度与重试。",
-      status: "下一步实现",
+      status: "已完成",
     },
     {
       title: "编辑与删除",
       detail: "修改标题、描述、分类、拍摄日期；删除前二次确认并同时清理图片文件。",
-      status: "待实现",
+      status: "已完成",
     },
     {
       title: "分类管理",

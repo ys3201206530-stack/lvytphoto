@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { publicPhotoUrl } from "@/lib/photo-url";
+import { DeletePhotoButton } from "./delete-button";
 
 export const instant = false;
 
@@ -100,7 +101,15 @@ export default async function PhotosPage() {
                 <p className="mt-3 text-[10px] text-faint">
                   {photo.width} × {photo.height} · 上传于 {photo.created_at.slice(0, 10)}
                 </p>
-                <p className="mt-3 text-[11px] text-faint">编辑 / 删除：下一步实现</p>
+                <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
+                  <Link
+                    href={`/admin/photos/${photo.id}/edit`}
+                    className="text-[11px] tracking-[0.12em] text-accent underline-offset-4 hover:underline"
+                  >
+                    编辑
+                  </Link>
+                  <DeletePhotoButton id={photo.id} title={photo.title} />
+                </div>
               </div>
             </li>
           ))}
