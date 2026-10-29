@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSessionUser } from "@/lib/auth";
+import { UserGlyph } from "@/components/user-glyph";
+import { avatarUrl, getSessionUser } from "@/lib/auth";
 import { signOutAction } from "./actions";
+import { AvatarForm } from "./avatar-form";
+import { NameForm } from "./name-form";
 
 export const metadata: Metadata = {
   title: "我的账号",
@@ -31,6 +34,7 @@ export default async function AccountPage() {
   const { user, profile } = session;
   const isAdmin = profile?.role === "admin";
   const name = profile?.display_name || user.email?.split("@")[0] || "我";
+  const avatar = avatarUrl(profile?.avatar_path);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 pb-24 pt-32 sm:px-8">
@@ -39,29 +43,58 @@ export default async function AccountPage() {
         我的账号
       </h1>
       <p className="mt-4 text-sm leading-7 text-muted">
-        你好，{name}。这里是你的个人资料，点赞和评论会以这个昵称显示。
+        你好，{name}。点赞和评论会以这里的昵称和头像显示。
       </p>
 
-      <dl className="mt-12 divide-y divide-line border-y border-line text-sm">
-        <div className="flex items-center justify-between py-4">
-          <dt className="text-muted">昵称</dt>
-          <dd className="text-paper">{name}</dd>
+      <div className="mt-8 flex items-center gap-4">
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line bg-surface">
+          {avatar ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatar} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <UserGlyph className="h-6 w-6 text-faint" />
+          )}
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm text-paper">{name}</p>
+          <p className="truncate text-xs text-faint">{user.email}</p>
         </div>
-        <div className="flex items-center justify-between py-4">
-          <dt className="text-muted">邮箱</dt>
-          <dd className="text-paper">{user.email}</dd>
+      </div>
+
+      <section className="mt-12 border-t border-line pt-8">
+        <h2 className="text-sm tracking-[0.2em] text-muted">头像</h2>
+        <div className="mt-6">
+          <AvatarForm userId={user.id} currentUrl={avatar} />
         </div>
-        <div className="flex items-center justify-between py-4">
-          <dt className="text-muted">注册时间</dt>
-          <dd className="text-paper">{formatDate(user.created_at)}</dd>
+      </section>
+
+      <section className="mt-10 border-t border-line pt-8">
+        <h2 className="text-sm tracking-[0.2em] text-muted">昵称</h2>
+        <div className="mt-6">
+          <NameForm current={name} />
         </div>
-        <div className="flex items-center justify-between py-4">
-          <dt className="text-muted">身份</dt>
-          <dd className={isAdmin ? "text-accent" : "text-paper"}>
-            {isAdmin ? "管理员" : "普通用户"}
-          </dd>
-        </div>
-      </dl>
+        <p className="mt-3 text-xs text-faint">1–20 个字，保存后全站立刻生效。</p>
+      </section>
+
+      <section className="mt-10 border-t border-line pt-8">
+        <h2 className="text-sm tracking-[0.2em] text-muted">账号信息</h2>
+        <dl className="mt-4 divide-y divide-line border-b border-line text-sm">
+          <div className="flex items-center justify-between py-4">
+            <dt className="text-muted">邮箱</dt>
+            <dd className="text-paper">{user.email}</dd>
+          </div>
+          <div className="flex items-center justify-between py-4">
+            <dt className="text-muted">注册时间</dt>
+            <dd className="text-paper">{formatDate(user.created_at)}</dd>
+          </div>
+          <div className="flex items-center justify-between py-4">
+            <dt className="text-muted">身份</dt>
+            <dd className={isAdmin ? "text-accent" : "text-paper"}>
+              {isAdmin ? "管理员" : "普通用户"}
+            </dd>
+          </div>
+        </dl>
+      </section>
 
       <div className="mt-10 flex flex-wrap items-center gap-4">
         <Link

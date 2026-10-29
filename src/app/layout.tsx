@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
+import { HeaderAuth } from "@/components/header-auth";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
@@ -28,7 +30,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           跳到主要内容
         </a>
-        <SiteHeader />
+        <SiteHeader
+          authSlot={
+            <Suspense fallback={<span className="hidden h-3 w-16 md:block" aria-hidden />}>
+              <HeaderAuth />
+            </Suspense>
+          }
+        />
         <main id="main" className="flex-1">
           {children}
         </main>

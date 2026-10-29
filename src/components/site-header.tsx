@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { nav, site } from "@/lib/site";
-import { MobileUserMenu, UserMenu } from "@/components/user-menu";
 
-export function SiteHeader() {
+export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -81,7 +80,7 @@ export function SiteHeader() {
             );
           })}
           </nav>
-          <UserMenu />
+          {authSlot}
         </div>
 
         <button
@@ -126,7 +125,7 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <MobileUserMenu />
+            {authSlot}
             <p className="mt-10 text-xs leading-6 tracking-[0.2em] text-faint">
               {site.tagline}
             </p>

@@ -164,3 +164,41 @@ export async function prepareBackground(
     bitmap.close();
   }
 }
+
+/** 头像：居中裁成正方形，512px WebP。 */
+export async function prepareAvatar(file: File): Promise<Blob> {
+  assertUsableFile(file);
+
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  } catch {
+    throw new Error("浏览器无法解码这张图片，请换一张 JPG 或 PNG。");
+  }
+
+  try {
+    const size = 512;
+    const side = Math.min(bitmap.width, bitmap.height);
+    const sx = (bitmap.width - side) / 2;
+    const sy = (bitmap.height - side) / 2;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) throw new Error("当前浏览器不支持图片处理，请换用 Chrome 或 Edge。");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, size, size);
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/webp", 0.9),
+    );
+
+    if (!blob) throw new Error("头像处理失败，请换一张试试。");
+    return blob;
+  } finally {
+    bitmap.close();
+  }
+}
