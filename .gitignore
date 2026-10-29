@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 文件编辑工具的临时锁文件
+.dsh-ops-*.lock
