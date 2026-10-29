@@ -5,11 +5,12 @@ import { signIn, type LoginState } from "./actions";
 
 const initialState: LoginState = {};
 
-export function LoginForm() {
+export function LoginForm({ next = "" }: { next?: string }) {
   const [state, formAction, pending] = useActionState(signIn, initialState);
 
   return (
     <form action={formAction} className="mt-10 space-y-5">
+      <input type="hidden" name="next" value={next} />
       <div>
         <label
           htmlFor="email"

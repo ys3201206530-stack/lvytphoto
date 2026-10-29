@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { nav, site } from "@/lib/site";
+import { MobileUserMenu, UserMenu } from "@/components/user-menu";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -56,7 +57,8 @@ export function SiteHeader() {
           {site.name}
         </Link>
 
-        <nav className="hidden items-center gap-10 md:flex" aria-label="主导航">
+        <div className="hidden items-center gap-8 md:flex">
+          <nav className="flex items-center gap-8" aria-label="主导航">
           {nav.map((item) => {
             const active =
               item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -78,7 +80,9 @@ export function SiteHeader() {
               </Link>
             );
           })}
-        </nav>
+          </nav>
+          <UserMenu />
+        </div>
 
         <button
           type="button"
@@ -122,6 +126,7 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            <MobileUserMenu />
             <p className="mt-10 text-xs leading-6 tracking-[0.2em] text-faint">
               {site.tagline}
             </p>
