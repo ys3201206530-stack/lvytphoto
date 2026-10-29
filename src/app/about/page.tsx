@@ -4,7 +4,7 @@ import { getAboutContent, splitParagraphs } from "@/lib/about-content";
 
 export const metadata: Metadata = {
   title: "关于",
-  description: "关于 lvytphoto 和这里记录的照片。",
+  description: "关于 lvyt.art 和这里记录的照片。",
 };
 
 export const instant = false;

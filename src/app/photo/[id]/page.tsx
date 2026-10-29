@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   return {
     title: photo.title,
-    description: photo.description ?? `${photo.title} · lvytphoto 摄影作品`,
+    description: photo.description ?? `${photo.title} · lvyt.art 摄影作品`,
     openGraph: {
       title: photo.title,
       images: [{ url: publicPhotoUrl(photo.storagePath, "lg") }],
