@@ -1,0 +1,123 @@
+import { createClient } from "@/lib/supabase/server";
+
+export type PublicPhoto = {
+  id: string;
+  title: string;
+  description: string | null;
+  shotAt: string | null;
+  createdAt: string;
+  width: number;
+  height: number;
+  storagePath: string;
+  blurDataUrl: string | null;
+  category: { name: string; slug: string } | null;
+};
+
+export type PublicCategory = {
+  slug: string;
+  name: string;
+  description: string | null;
+};
+
+type PhotoRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  shot_at: string | null;
+  created_at: string;
+  width: number;
+  height: number;
+  storage_path: string;
+  blur_data_url: string | null;
+  categories: { name: string; slug: string } | { name: string; slug: string }[] | null;
+};
+
+function normalizeCategory(
+  value: PhotoRow["categories"],
+): { name: string; slug: string } | null {
+  if (!value) return null;
+  return Array.isArray(value) ? (value[0] ?? null) : value;
+}
+
+function normalizePhoto(row: PhotoRow): PublicPhoto {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    shotAt: row.shot_at,
+    createdAt: row.created_at,
+    width: row.width,
+    height: row.height,
+    storagePath: row.storage_path,
+    blurDataUrl: row.blur_data_url,
+    category: normalizeCategory(row.categories),
+  };
+}
+
+const PHOTO_COLUMNS =
+  "id, title, description, shot_at, created_at, width, height, storage_path, blur_data_url, categories(name, slug)";
+
+/** 前台作品列表：只取已公开的，按上传时间倒序。 */
+export async function listPublishedPhotos(options?: {
+  categorySlug?: string;
+  limit?: number;
+}): Promise<PublicPhoto[]> {
+  const supabase = await createClient();
+  const columns = options?.categorySlug
+    ? PHOTO_COLUMNS.replace("categories(name, slug)", "categories!inner(name, slug)")
+    : PHOTO_COLUMNS;
+
+  let query = supabase
+    .from("photos")
+    .select(columns)
+    .eq("is_published", true)
+    .order("created_at", { ascending: false });
+
+  if (options?.categorySlug) {
+    query = query.eq("categories.slug", options.categorySlug);
+  }
+  if (options?.limit) {
+    query = query.limit(options.limit);
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    console.error("listPublishedPhotos failed:", error.message);
+    return [];
+  }
+
+  return ((data ?? []) as unknown as PhotoRow[]).map(normalizePhoto);
+}
+
+/** 单张作品详情；草稿或不存在都返回 null。 */
+export async function getPublishedPhoto(id: string): Promise<PublicPhoto | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("photos")
+    .select(PHOTO_COLUMNS)
+    .eq("id", id)
+    .eq("is_published", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getPublishedPhoto failed:", error.message);
+    return null;
+  }
+  return data ? normalizePhoto(data as unknown as PhotoRow) : null;
+}
+
+/** 前台分类列表，按排序值升序。 */
+export async function listPublicCategories(): Promise<PublicCategory[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("categories")
+    .select("slug, name, description")
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("listPublicCategories failed:", error.message);
+    return [];
+  }
+  return (data ?? []) as PublicCategory[];
+}

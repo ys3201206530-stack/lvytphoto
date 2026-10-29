@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { MasonryGrid } from "@/components/masonry-grid";
+import { PhotoTile } from "@/components/photo-tile";
 import { SectionHeading } from "@/components/section-heading";
-import { categories, photos } from "@/lib/photos";
+import { listPublicCategories, listPublishedPhotos } from "@/lib/public-photos";
 import { site } from "@/lib/site";
+
+export const instant = false;
 
 const heroBackground =
   "radial-gradient(120% 90% at 68% 16%, rgba(198,166,132,0.28), transparent 58%), radial-gradient(90% 80% at 18% 82%, rgba(70,96,112,0.45), transparent 62%), linear-gradient(168deg, #101820 0%, #1d2a31 45%, #080a0c 100%)";
@@ -10,8 +12,20 @@ const heroBackground =
 const heroOverlay =
   "linear-gradient(180deg, rgba(11,11,12,0.58) 0%, rgba(11,11,12,0.10) 38%, rgba(11,11,12,0.72) 80%, #0b0b0c 100%)";
 
-export default function HomePage() {
-  const featured = photos.slice(0, 6);
+const CATEGORY_GRADIENTS = [
+  "linear-gradient(160deg, #1c2630 0%, #0d1116 70%)",
+  "linear-gradient(160deg, #2a2118 0%, #100d0a 70%)",
+  "linear-gradient(160deg, #231d24 0%, #100d11 70%)",
+  "linear-gradient(160deg, #1a2420 0%, #0b110f 70%)",
+  "linear-gradient(160deg, #20222c 0%, #0d0e13 70%)",
+  "linear-gradient(160deg, #2b2420 0%, #120f0d 70%)",
+];
+
+export default async function HomePage() {
+  const [featured, categories] = await Promise.all([
+    listPublishedPhotos({ limit: 6 }),
+    listPublicCategories(),
+  ]);
 
   return (
     <>
@@ -84,42 +98,56 @@ export default function HomePage() {
       </section>
 
       {/* ---------- 精选作品 ---------- */}
-      <section className="py-20 md:py-28">
+      <section id="selected" className="scroll-mt-20 py-20 md:py-28">
         <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
           <SectionHeading
             index="01 — Selected"
             title="精选作品"
-            description="从最近的拍摄里挑出的几张。悬停可以看到标题和拍摄地点。"
+            description="从最近的拍摄里挑出的几张。悬停或轻触可以看到标题与分类。"
             href="/works"
             linkLabel="全部作品"
           />
 
           <div className="mt-10 md:mt-14">
-            <MasonryGrid photos={featured} />
+            {featured.length === 0 ? (
+              <div className="border border-dashed border-line px-6 py-20 text-center">
+                <p className="text-sm text-muted">还没有公开的作品。</p>
+              </div>
+            ) : (
+              <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 lg:gap-6">
+                {featured.map((photo) => (
+                  <PhotoTile key={photo.id} photo={photo} eager />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* ---------- 分类入口 ---------- */}
-      <section className="border-t border-line py-20 md:py-28">
+      <section id="categories" className="scroll-mt-20 border-t border-line py-20 md:py-28">
         <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
           <SectionHeading index="02 — Categories" title="按分类浏览" />
 
           <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <Link
                 key={category.slug}
-                href="/works"
+                href={`/works?category=${encodeURIComponent(category.slug)}`}
                 className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden p-4"
-                style={{ backgroundImage: category.background }}
+                style={{
+                  backgroundImage: CATEGORY_GRADIENTS[index % CATEGORY_GRADIENTS.length],
+                }}
               >
                 <span className="absolute inset-0 bg-black/20 transition-colors duration-500 group-hover:bg-black/0" />
                 <span className="relative text-sm tracking-[0.18em] text-paper">
                   {category.name}
                 </span>
-                <span className="relative mt-1 text-[10px] tracking-[0.14em] text-white/45">
-                  {category.description}
-                </span>
+                {category.description ? (
+                  <span className="relative mt-1 line-clamp-2 text-[10px] leading-4 tracking-[0.14em] text-white/45">
+                    {category.description}
+                  </span>
+                ) : null}
               </Link>
             ))}
           </div>
@@ -127,7 +155,7 @@ export default function HomePage() {
       </section>
 
       {/* ---------- 关于片段 ---------- */}
-      <section className="border-t border-line py-20 md:py-28">
+      <section id="about" className="scroll-mt-20 border-t border-line py-20 md:py-28">
         <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
           <div className="grid gap-10 md:grid-cols-12 md:gap-8">
             <div className="md:col-span-4">

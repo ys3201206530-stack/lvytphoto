@@ -114,6 +114,8 @@ export async function createPhoto(input: CreatePhotoInput): Promise<CreatePhotoR
 
   revalidatePath("/admin/photos");
   revalidatePath("/admin");
+  revalidatePath("/");
+  revalidatePath("/works");
 
   return { ok: true, id: created.id };
 }
@@ -190,6 +192,9 @@ export async function updatePhoto(
 
   revalidatePath("/admin/photos");
   revalidatePath("/admin");
+  revalidatePath("/");
+  revalidatePath("/works");
+  revalidatePath(`/photo/${id}`);
   redirect("/admin/photos");
 }
 
@@ -238,6 +243,9 @@ export async function deletePhoto(id: string): Promise<DeleteResult> {
 
   revalidatePath("/admin/photos");
   revalidatePath("/admin");
+  revalidatePath("/");
+  revalidatePath("/works");
+  revalidatePath(`/photo/${id}`);
 
   return { ok: true };
 }

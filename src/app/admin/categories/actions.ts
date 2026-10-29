@@ -35,6 +35,8 @@ function revalidateCategories() {
   revalidatePath("/admin/categories");
   revalidatePath("/admin");
   revalidatePath("/admin/photos/new");
+  revalidatePath("/");
+  revalidatePath("/works");
 }
 
 /** 新增分类。 */
