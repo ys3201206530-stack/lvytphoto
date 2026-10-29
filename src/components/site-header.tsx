@@ -37,8 +37,10 @@ export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
     };
   }, [open]);
 
-  // 首页顶部透明，滚动后或进入其它页面时显示底色
-  const solid = scrolled || pathname !== "/";
+  // 首页顶部透明，滚动后或进入其它页面时显示底色；
+  // 菜单展开时强制去掉 backdrop-blur：backdrop-filter 会让 header 成为 fixed 子元素的包含块，
+  // 滚动过（或不在首页）时抽屉会被压成 64px 高，看起来就像“点了没反应”。
+  const solid = (scrolled || pathname !== "/") && !open;
 
   return (
     <header
