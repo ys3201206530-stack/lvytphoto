@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export type BackgroundResult = { ok: true } | { ok: false; error: string };
 export type AboutState = { error?: string; message?: string };
+export type HomeState = { error?: string; message?: string };
 
 const PATH_RE =
   /^site\/background-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -92,7 +93,41 @@ export async function setBackground(input: BackgroundInput): Promise<BackgroundR
   return { ok: true };
 }
 
-/** 保存“关于我”页面的正文与联系邮箱。 */
+/** 保存首页主视觉的三行文字。 */
+export async function saveHome(
+  _prevState: HomeState,
+  formData: FormData,
+): Promise<HomeState> {
+  const eyebrow = String(formData.get("eyebrow") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const tagline = String(formData.get("tagline") ?? "").trim();
+
+  if (eyebrow.length > 40) return { error: "上方小字最多 40 个字符。" };
+  if (title.length === 0) return { error: "大标题不能为空。" };
+  if (title.length > 30) return { error: "大标题最多 30 个字符。" };
+  if (tagline.length > 120) return { error: "副标题最多 120 个字符。" };
+
+  const supabase = await getAdminClient();
+  if (!supabase) return { error: "只有管理员可以修改首页文案。" };
+
+  const { error } = await supabase.from("site_settings").upsert(
+    {
+      key: "homepage",
+      value: { eyebrow, title, tagline, updated_at: new Date().toISOString() },
+    },
+    { onConflict: "key" },
+  );
+
+  if (error) {
+    console.error("saveHome failed:", error.message);
+    return { error: `保存失败：${error.message}` };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/settings");
+  return { message: "已保存，首页立刻生效。" };
+}
+
 export async function saveAbout(
   _prevState: AboutState,
   formData: FormData,

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PhotoTile } from "@/components/photo-tile";
 import { SectionHeading } from "@/components/section-heading";
 import { listPublicCategories, listPublishedPhotos } from "@/lib/public-photos";
+import { getHomeContent } from "@/lib/home-content";
 import { getSiteBackground } from "@/lib/site-background";
 import { site } from "@/lib/site";
 
@@ -23,10 +24,11 @@ const CATEGORY_GRADIENTS = [
 ];
 
 export default async function HomePage() {
-  const [featured, categories, background] = await Promise.all([
+  const [featured, categories, background, home] = await Promise.all([
     listPublishedPhotos({ limit: 6 }),
     listPublicCategories(),
     getSiteBackground(),
+    getHomeContent(),
   ]);
 
   return (
@@ -73,21 +75,21 @@ export default async function HomePage() {
             className="animate-fade-up text-[10px] uppercase tracking-[0.42em] text-accent"
             style={{ animationDelay: "80ms" }}
           >
-            Personal Photography
+            {home.eyebrow}
           </p>
 
           <h1
             className="animate-fade-up mt-6 text-[clamp(2.25rem,7vw,4.5rem)] font-light text-paper"
             style={{ animationDelay: "160ms", letterSpacing: "0.22em" }}
           >
-            {site.name}
+            {home.title}
           </h1>
 
           <p
             className="animate-fade-up mt-6 max-w-md text-sm leading-8 text-white/70 md:text-base"
             style={{ animationDelay: "260ms" }}
           >
-            {site.tagline}
+            {home.tagline}
           </p>
 
           <div

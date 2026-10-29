@@ -1,9 +1,11 @@
 import { requireAdmin } from "@/lib/auth";
 import { getAboutContent } from "@/lib/about-content";
+import { getHomeContent } from "@/lib/home-content";
 import { publicPhotoUrl } from "@/lib/photo-url";
 import { getBackgroundRecord } from "@/lib/site-background";
 import { AboutForm } from "./about-form";
 import { BackgroundForm } from "./background-form";
+import { HomeForm } from "./home-form";
 
 export const instant = false;
 export const metadata = { title: "站点设置" };
@@ -11,7 +13,11 @@ export const metadata = { title: "站点设置" };
 export default async function SettingsPage() {
   await requireAdmin();
 
-  const [record, about] = await Promise.all([getBackgroundRecord(), getAboutContent()]);
+  const [record, about, home] = await Promise.all([
+    getBackgroundRecord(),
+    getAboutContent(),
+    getHomeContent(),
+  ]);
   const previewUrl = record ? publicPhotoUrl(record.path, "lg") : null;
 
   return (
@@ -23,6 +29,17 @@ export default async function SettingsPage() {
       </p>
 
       <section className="mt-12">
+        <h2 className="font-serif text-xl tracking-wide text-paper">首页主视觉文字</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted">
+          首页最上方的三行字：小标题、大标题、副标题。改完保存，首页立刻生效。
+        </p>
+
+        <div className="mt-6">
+          <HomeForm eyebrow={home.eyebrow} title={home.title} tagline={home.tagline} />
+        </div>
+      </section>
+
+      <section className="mt-16 border-t border-line pt-10">
         <h2 className="font-serif text-xl tracking-wide text-paper">首页背景</h2>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-muted">
           这张图会铺在首页最上方，作为整站的“第一眼”。
