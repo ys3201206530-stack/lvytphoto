@@ -32,7 +32,12 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <Link href="/admin" className="text-paper">
           概览
         </Link>
-        <span className="text-faint">作品管理（下一步实现）</span>
+        <Link href="/admin/photos" className="text-muted transition-colors hover:text-paper">
+          作品管理
+        </Link>
+        <Link href="/admin/photos/new" className="text-muted transition-colors hover:text-paper">
+          上传作品
+        </Link>
         <span className="text-faint">分类管理（下一步实现）</span>
         <span className="text-faint">站点背景（下一步实现）</span>
       </nav>

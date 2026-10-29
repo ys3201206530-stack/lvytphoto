@@ -1,0 +1,125 @@
+/**
+ * 浏览器端图片处理：把用户选的原图压成三档 WebP + 一张极小模糊占位图。
+ * 只在浏览器里运行（用到 canvas / createImageBitmap），不要在任何服务端组件里调用。
+ */
+
+export const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
+
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+export type PhotoSlot = "sm" | "md" | "lg";
+
+export type Variant = {
+  slot: PhotoSlot;
+  width: number;
+  height: number;
+  blob: Blob;
+};
+
+export type PreparedImage = {
+  /** 最大一档的真实像素尺寸 */
+  width: number;
+  height: number;
+  blurDataUrl: string;
+  variants: Variant[];
+};
+
+const SLOTS: { slot: PhotoSlot; max: number }[] = [
+  { slot: "sm", max: 480 },
+  { slot: "md", max: 1280 },
+  { slot: "lg", max: 2560 },
+];
+
+/** 选择文件后立即做的检查，错误信息直接给用户看。 */
+export function assertUsableFile(file: File) {
+  if (!ACCEPTED_TYPES.includes(file.type)) {
+    throw new Error("只支持 JPG、PNG、WebP。iPhone 的 HEIC 照片请先在相册里导出为 JPG。");
+  }
+  if (file.size > MAX_SOURCE_BYTES) {
+    throw new Error("这张原图超过 25MB，请先导出成小一点的 JPG 再上传。");
+  }
+}
+
+async function encode(bitmap: ImageBitmap, targetWidth: number): Promise<{ blob: Blob; width: number; height: number }> {
+  const scale = Math.min(1, targetWidth / bitmap.width);
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d", { alpha: false });
+  if (!ctx) throw new Error("当前浏览器不支持图片压缩，请换用 Chrome 或 Edge。");
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(bitmap, 0, 0, width, height);
+
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, "image/webp", 0.86),
+  );
+
+  if (!blob) throw new Error("图片压缩失败，请换一张试试。");
+  if (blob.type !== "image/webp") {
+    throw new Error("当前浏览器不支持 WebP 压缩，请换用最新版 Chrome 或 Edge。");
+  }
+
+  return { blob, width, height };
+}
+
+function makeBlur(bitmap: ImageBitmap): string {
+  const width = 20;
+  const height = Math.max(1, Math.round((bitmap.height / bitmap.width) * width));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return "";
+
+  ctx.drawImage(bitmap, 0, 0, width, height);
+
+  const webp = canvas.toDataURL("image/webp", 0.4);
+  return webp.startsWith("data:image/webp") ? webp : canvas.toDataURL("image/jpeg", 0.5);
+}
+
+/**
+ * 把一张原图压成 sm/md/lg 三档。
+ * onStep 用来在界面上显示「正在压缩中图…」这类文字。
+ */
+export async function prepareImage(
+  file: File,
+  onStep?: (label: string) => void,
+): Promise<PreparedImage> {
+  assertUsableFile(file);
+
+  onStep?.("正在读取图片…");
+  // imageOrientation: "from-image" 会自动把手机竖拍的方向转正
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+
+  try {
+    const variants: Variant[] = [];
+
+    for (const { slot, max } of SLOTS) {
+      onStep?.(
+        slot === "sm" ? "正在生成缩略图…" : slot === "md" ? "正在压缩中图…" : "正在压缩大图…",
+      );
+      const out = await encode(bitmap, max);
+      variants.push({ slot, ...out });
+    }
+
+    onStep?.("正在生成模糊占位图…");
+    const blurDataUrl = makeBlur(bitmap);
+    const largest = variants[variants.length - 1];
+
+    return {
+      width: largest.width,
+      height: largest.height,
+      blurDataUrl,
+      variants,
+    };
+  } finally {
+    bitmap.close();
+  }
+}
