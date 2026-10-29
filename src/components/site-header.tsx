@@ -43,8 +43,10 @@ export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
   const solid = (scrolled || pathname !== "/") && !open;
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+    <>
+      <header
+        style={{ zIndex: 70 }}
+        className={`fixed inset-x-0 top-0 transition-colors duration-300 ${
         solid
           ? "border-b border-line bg-ink/85 backdrop-blur-md"
           : "border-b border-transparent"
@@ -110,9 +112,14 @@ export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
           />
         </button>
       </div>
+    </header>
 
-      {open && (
-        <div className="fixed inset-0 z-50 bg-ink/95 backdrop-blur-xl md:hidden">
+    {/* 抽屉放在 header 外面：Safari 里 header 的 backdrop-filter 会把 fixed 子元素锁在 header 的盒子里 */}
+    {open && (
+      <div
+        style={{ zIndex: 60 }}
+        className="fixed inset-0 bg-ink/95 backdrop-blur-xl md:hidden"
+      >
           <nav
             className="flex h-full flex-col justify-center gap-2 px-8"
             aria-label="手机导航"
@@ -134,6 +141,6 @@ export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
