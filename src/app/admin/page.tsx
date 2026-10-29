@@ -24,12 +24,17 @@ export default async function AdminHomePage() {
     {
       title: "分类管理",
       detail: "新增、改名、排序、删除；删除后该分类的作品自动变为“未分类”。",
-      status: "待实现",
+      status: "已完成",
     },
     {
       title: "站点背景",
       detail: "只允许管理员更换首页背景图，访客和普通用户无权修改。",
-      status: "待实现",
+      status: "已完成",
+    },
+    {
+      title: "点赞与评论",
+      detail: "登录后才能点赞和评论；一人一图只有一个赞，作者和管理员可以删除评论。",
+      status: "已完成",
     },
   ];
 

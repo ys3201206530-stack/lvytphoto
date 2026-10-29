@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPublishedPhoto } from "@/lib/public-photos";
+import {
+  getPhotoLikeState,
+  getPublishedPhoto,
+  listPhotoComments,
+} from "@/lib/public-photos";
+import { getSessionUser } from "@/lib/auth";
 import { publicPhotoUrl } from "@/lib/photo-url";
+import { LikeButton } from "@/components/like-button";
+import { CommentForm } from "@/components/comment-form";
+import { CommentList } from "@/components/comment-list";
 
 export const instant = false;
 
@@ -39,6 +47,13 @@ export default async function PhotoDetailPage({
 
   const photo = await getPublishedPhoto(id);
   if (!photo) notFound();
+
+  const session = await getSessionUser();
+  const [comments, like] = await Promise.all([
+    listPhotoComments(id),
+    getPhotoLikeState(id, session?.user.id ?? null),
+  ]);
+  const loginHref = `/login?next=/photo/${id}`;
 
   const srcSet = [
     `${publicPhotoUrl(photo.storagePath, "md")} 1280w`,
@@ -95,7 +110,37 @@ export default async function PhotoDetailPage({
           </div>
         ) : null}
 
-        <div className="mt-10 border-t border-line pt-6 text-[11px] text-faint">
+        <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-line pt-6">
+          <LikeButton
+            photoId={photo.id}
+            initialLiked={like.liked}
+            initialCount={like.count}
+            isLoggedIn={Boolean(session)}
+            loginHref={loginHref}
+          />
+          <span className="text-xs text-faint">{comments.length} 条评论</span>
+        </div>
+
+        <section className="mt-12 border-t border-line pt-8">
+          <h2 className="font-serif text-xl tracking-wide text-paper">
+            评论 <span className="ml-1 text-sm text-faint">{comments.length}</span>
+          </h2>
+
+          <CommentForm
+            photoId={photo.id}
+            isLoggedIn={Boolean(session)}
+            loginHref={loginHref}
+          />
+
+          <CommentList
+            comments={comments}
+            photoId={photo.id}
+            currentUserId={session?.user.id ?? null}
+            isAdmin={session?.profile?.role === "admin"}
+          />
+        </section>
+
+        <div className="mt-12 border-t border-line pt-6 text-[11px] text-faint">
           照片版权归作者所有，未经许可请勿转载。
         </div>
       </div>

@@ -121,3 +121,70 @@ export async function listPublicCategories(): Promise<PublicCategory[]> {
   }
   return (data ?? []) as PublicCategory[];
 }
+
+export type PhotoComment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  userId: string;
+  displayName: string;
+  avatarPath: string | null;
+};
+
+type CommentRow = {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  display_name: string;
+  avatar_path: string | null;
+};
+
+/** 某张照片下的评论，按时间正序；作者昵称/头像由数据库函数提供。 */
+export async function listPhotoComments(photoId: string): Promise<PhotoComment[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("photo_comments", {
+    p_photo_id: photoId,
+  });
+
+  if (error) {
+    console.error("listPhotoComments failed:", error.message);
+    return [];
+  }
+
+  return ((data ?? []) as CommentRow[]).map((row) => ({
+    id: row.id,
+    content: row.content,
+    createdAt: row.created_at,
+    userId: row.user_id,
+    displayName: row.display_name,
+    avatarPath: row.avatar_path,
+  }));
+}
+
+/** 点赞总数，以及当前登录用户有没有点过。 */
+export async function getPhotoLikeState(
+  photoId: string,
+  userId: string | null,
+): Promise<{ count: number; liked: boolean }> {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("likes")
+    .select("*", { count: "exact", head: true })
+    .eq("photo_id", photoId);
+
+  if (error) console.error("countLikes failed:", error.message);
+
+  let liked = false;
+  if (userId) {
+    const { data } = await supabase
+      .from("likes")
+      .select("photo_id")
+      .eq("photo_id", photoId)
+      .eq("user_id", userId)
+      .maybeSingle();
+    liked = Boolean(data);
+  }
+
+  return { count: count ?? 0, liked };
+}
