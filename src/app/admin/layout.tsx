@@ -1,0 +1,43 @@
+import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
+import { signOut } from "./actions";
+
+export const instant = false;
+
+export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
+  const { user, profile } = await requireAdmin();
+
+  return (
+    <div className="mx-auto w-full max-w-6xl px-5 pb-24 pt-28 sm:px-8">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.42em] text-accent">ADMIN</p>
+          <h1 className="mt-3 font-serif text-3xl tracking-wide text-paper">作品后台</h1>
+        </div>
+
+        <div className="flex items-center gap-5 text-xs text-muted">
+          <span>{profile?.display_name ?? user.email}</span>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="border border-line px-4 py-2 tracking-[0.16em] transition-colors duration-300 hover:border-line-strong hover:text-paper"
+            >
+              退出登录
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <nav className="mt-6 flex flex-wrap gap-6 text-sm">
+        <Link href="/admin" className="text-paper">
+          概览
+        </Link>
+        <span className="text-faint">作品管理（下一步实现）</span>
+        <span className="text-faint">分类管理（下一步实现）</span>
+        <span className="text-faint">站点背景（下一步实现）</span>
+      </nav>
+
+      <div className="mt-10">{children}</div>
+    </div>
+  );
+}
