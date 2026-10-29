@@ -6,19 +6,19 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
 const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lvytphoto.vercel.app"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lvyt.top"
 ).replace(/\/+$/, "");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "lvyt.art · 个人摄影作品集",
-    template: "%s · lvyt.art",
+    default: "lvyt.top · 个人摄影作品集",
+    template: "%s · lvyt.top",
   },
   description:
-    "lvyt.art，一个个人摄影作品集。记录光、影与旅途中遇见的瞬间：风光、城市、人像、街拍、建筑与旅行。",
+    "lvyt.top，一个个人摄影作品集。记录光、影与旅途中遇见的瞬间：风光、城市、人像、街拍、建筑与旅行。",
   openGraph: {
-    title: "lvyt.art · 个人摄影作品集",
+    title: "lvyt.top · 个人摄影作品集",
     description: "光与影之间，收藏每一次遇见。",
     type: "website",
   },
