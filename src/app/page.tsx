@@ -1,69 +1,161 @@
-import Image from "next/image";
+import Link from "next/link";
+import { MasonryGrid } from "@/components/masonry-grid";
+import { SectionHeading } from "@/components/section-heading";
+import { categories, photos } from "@/lib/photos";
+import { site } from "@/lib/site";
 
-export default function Home() {
+const heroBackground =
+  "radial-gradient(120% 90% at 68% 16%, rgba(198,166,132,0.28), transparent 58%), radial-gradient(90% 80% at 18% 82%, rgba(70,96,112,0.45), transparent 62%), linear-gradient(168deg, #101820 0%, #1d2a31 45%, #080a0c 100%)";
+
+const heroOverlay =
+  "linear-gradient(180deg, rgba(11,11,12,0.58) 0%, rgba(11,11,12,0.10) 38%, rgba(11,11,12,0.72) 80%, #0b0b0c 100%)";
+
+export default function HomePage() {
+  const featured = photos.slice(0, 6);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      {/* ---------- 主视觉 ---------- */}
+      <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{ backgroundImage: heroBackground }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{ backgroundImage: heroOverlay }}
+        />
+
+        <div className="relative mx-auto w-full max-w-[1440px] px-5 pb-16 md:px-10 md:pb-24">
+          <p
+            className="animate-fade-up text-[10px] uppercase tracking-[0.42em] text-accent"
+            style={{ animationDelay: "80ms" }}
+          >
+            Personal Photography
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          <h1
+            className="animate-fade-up mt-6 text-[clamp(2.25rem,7vw,4.5rem)] font-light text-paper"
+            style={{ animationDelay: "160ms", letterSpacing: "0.22em" }}
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {site.name}
+          </h1>
+
+          <p
+            className="animate-fade-up mt-6 max-w-md text-sm leading-8 text-white/70 md:text-base"
+            style={{ animationDelay: "260ms" }}
           >
-            Documentation
-          </a>
+            {site.tagline}
+          </p>
+
+          <div
+            className="animate-fade-up mt-10 flex flex-col gap-3 sm:flex-row sm:items-center"
+            style={{ animationDelay: "360ms" }}
+          >
+            <Link
+              href="/works"
+              className="inline-flex h-12 items-center justify-center border border-accent px-8 text-[13px] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-[#16130e]"
+            >
+              浏览作品
+            </Link>
+            <Link
+              href="/about"
+              className="inline-flex h-12 items-center justify-center px-6 text-[13px] tracking-[0.18em] text-white/70 transition-colors hover:text-paper"
+            >
+              关于我
+            </Link>
+          </div>
+
+          <ul className="mt-14 flex flex-wrap gap-x-7 gap-y-2 text-[10px] uppercase tracking-[0.26em] text-white/35">
+            {categories.map((category) => (
+              <li key={category.slug}>{category.name}</li>
+            ))}
+          </ul>
         </div>
-      </main>
-    </div>
+
+        <div className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex">
+          <span className="text-[9px] uppercase tracking-[0.32em] text-white/35">
+            Scroll
+          </span>
+          <span className="h-10 w-px bg-gradient-to-b from-white/35 to-transparent" />
+        </div>
+      </section>
+
+      {/* ---------- 精选作品 ---------- */}
+      <section className="py-20 md:py-28">
+        <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
+          <SectionHeading
+            index="01 — Selected"
+            title="精选作品"
+            description="从最近的拍摄里挑出的几张。悬停可以看到标题和拍摄地点。"
+            href="/works"
+            linkLabel="全部作品"
+          />
+
+          <div className="mt-10 md:mt-14">
+            <MasonryGrid photos={featured} />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- 分类入口 ---------- */}
+      <section className="border-t border-line py-20 md:py-28">
+        <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
+          <SectionHeading index="02 — Categories" title="按分类浏览" />
+
+          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+            {categories.map((category) => (
+              <Link
+                key={category.slug}
+                href="/works"
+                className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden p-4"
+                style={{ backgroundImage: category.background }}
+              >
+                <span className="absolute inset-0 bg-black/20 transition-colors duration-500 group-hover:bg-black/0" />
+                <span className="relative text-sm tracking-[0.18em] text-paper">
+                  {category.name}
+                </span>
+                <span className="relative mt-1 text-[10px] tracking-[0.14em] text-white/45">
+                  {category.description}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- 关于片段 ---------- */}
+      <section className="border-t border-line py-20 md:py-28">
+        <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
+          <div className="grid gap-10 md:grid-cols-12 md:gap-8">
+            <div className="md:col-span-4">
+              <p className="text-[10px] uppercase tracking-[0.34em] text-accent">
+                03 — About
+              </p>
+              <h2 className="mt-3 text-2xl font-medium tracking-tight md:text-3xl">
+                关于我
+              </h2>
+            </div>
+
+            <div className="md:col-span-8">
+              <p className="max-w-2xl text-[15px] leading-8 text-muted md:text-base">
+                {site.intro}
+              </p>
+              <Link
+                href="/about"
+                className="group mt-8 inline-flex items-center gap-2 text-[13px] tracking-[0.14em] text-muted transition-colors hover:text-accent"
+              >
+                了解更多
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
