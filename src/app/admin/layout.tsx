@@ -38,7 +38,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <Link href="/admin/photos/new" className="text-muted transition-colors hover:text-paper">
           上传作品
         </Link>
-        <span className="text-faint">分类管理（下一步实现）</span>
+        <Link href="/admin/categories" className="text-muted transition-colors hover:text-paper">
+          分类管理
+        </Link>
         <span className="text-faint">站点背景（下一步实现）</span>
       </nav>
 
