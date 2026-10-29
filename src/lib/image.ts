@@ -3,7 +3,7 @@
  * 只在浏览器里运行（用到 canvas / createImageBitmap），不要在任何服务端组件里调用。
  */
 
-export const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
+export const MAX_SOURCE_BYTES = 100 * 1024 * 1024;
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -36,7 +36,7 @@ export function assertUsableFile(file: File) {
     throw new Error("只支持 JPG、PNG、WebP。iPhone 的 HEIC 照片请先在相册里导出为 JPG。");
   }
   if (file.size > MAX_SOURCE_BYTES) {
-    throw new Error("这张原图超过 25MB，请先导出成小一点的 JPG 再上传。");
+    throw new Error("这张原图超过 100MB，请先导出成小一点的 JPG 再上传。");
   }
 }
 
@@ -96,7 +96,14 @@ export async function prepareImage(
 
   onStep?.("正在读取图片…");
   // imageOrientation: "from-image" 会自动把手机竖拍的方向转正
-  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  } catch {
+    throw new Error(
+      "浏览器无法解码这张图片，可能是尺寸过大或格式特殊。请先导出为 JPG（长边不超过 8000 像素）再试。",
+    );
+  }
 
   try {
     const variants: Variant[] = [];

@@ -281,7 +281,7 @@ export function UploadForm({ categories }: { categories: Category[] }) {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm text-paper">{file.name}</p>
               <p className="mt-1 text-xs text-faint">
-                原图 {formatSize(file.size)} · 上传时会自动压成三档 WebP，原图不会上传
+                原图 {formatSize(file.size)} · 上传时会自动压成三档 WebP（长边最大 2560px），原图不会上传
               </p>
               <button
                 type="button"
@@ -302,7 +302,7 @@ export function UploadForm({ categories }: { categories: Category[] }) {
           >
             <span className="text-sm text-paper">点击选择照片</span>
             <span className="text-xs text-faint">也可以把照片直接拖到这里</span>
-            <span className="mt-2 text-[11px] text-faint">支持 JPG / PNG / WebP，单张不超过 25MB</span>
+            <span className="mt-2 text-[11px] text-faint">支持 JPG / PNG / WebP，单张不超过 100MB</span>
           </button>
         )}
       </div>
