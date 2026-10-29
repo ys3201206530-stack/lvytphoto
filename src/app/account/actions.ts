@@ -35,17 +35,24 @@ export async function updateNickname(
     return { error: "登录状态已失效，请重新登录。" };
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("profiles")
     .update({ display_name: name })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select("display_name")
+    .maybeSingle<{ display_name: string | null }>();
 
   if (error) {
     console.error("updateNickname failed:", error.code, error.message);
-    return { error: "保存失败，请稍后重试。" };
+    return { error: `保存失败（${error.message}），请稍后重试。` };
+  }
+
+  if (!updated || updated.display_name !== name) {
+    return { error: "数据库里没有真正写入，通常是 profiles 表的更新权限没生效。" };
   }
 
   revalidatePath("/", "layout");
+  revalidatePath("/account");
   return { message: "昵称已更新。" };
 }
 

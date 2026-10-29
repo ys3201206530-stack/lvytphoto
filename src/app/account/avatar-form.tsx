@@ -11,6 +11,21 @@ import { removeAvatar, updateAvatar } from "./actions";
  * 头像上传：浏览器里裁成 512px 正方形 WebP，直接传到 Supabase Storage 的 avatars 桶，
  * 再把路径写进 profiles.avatar_path。文件不会经过我们的服务器。
  */
+function explainUploadError(message: string) {
+  if (/bucket.*not.*found/i.test(message)) {
+    return "存储桶 avatars 还没建好：请先在 Supabase 里运行 supabase/0002_avatar.sql。";
+  }
+  if (/row-level security|policy/i.test(message)) {
+    return "上传被数据库权限拒绝：请确认 0002_avatar.sql 已完整执行成功。";
+  }
+  if (/maximum allowed size|too large/i.test(message)) {
+    return "图片太大，请换一张小一点的。";
+  }
+  if (/mime|content type/i.test(message)) {
+    return "图片格式不被接受，请用 JPG、PNG 或 WebP。";
+  }
+  return `上传失败（${message}）`;
+}
 export function AvatarForm({
   userId,
   currentUrl,
@@ -50,7 +65,7 @@ export function AvatarForm({
 
       if (uploadError) {
         console.error("avatar upload failed:", uploadError.message);
-        throw new Error("上传失败，请检查网络后重试。");
+        throw new Error(explainUploadError(uploadError.message));
       }
 
       const result = await updateAvatar(path);

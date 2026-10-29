@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { updateNickname, type ProfileState } from "./actions";
 
 const EMPTY: ProfileState = {};
@@ -10,11 +11,23 @@ export function NameForm({ current }: { current: string }) {
     updateNickname,
     EMPTY,
   );
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // 保存成功后刷新服务端数据，让顶栏和本页都立刻显示新昵称
+  useEffect(() => {
+    if (!state.message) return;
+    router.refresh();
+    if (inputRef.current) {
+      inputRef.current.value = inputRef.current.value.trim();
+    }
+  }, [state.message, router]);
 
   return (
     <form action={formAction} className="space-y-3">
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
+          ref={inputRef}
           name="display_name"
           defaultValue={current}
           required
