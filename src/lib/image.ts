@@ -130,3 +130,37 @@ export async function prepareImage(
     bitmap.close();
   }
 }
+
+export type PreparedBackground = {
+  width: number;
+  height: number;
+  blurDataUrl: string;
+  blob: Blob;
+};
+
+/** 首页背景图只需要一张大图（最长边 2560）。 */
+export async function prepareBackground(
+  file: File,
+  onStep?: (label: string) => void,
+): Promise<PreparedBackground> {
+  assertUsableFile(file);
+
+  onStep?.("正在读取图片…");
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  } catch {
+    throw new Error(
+      "浏览器无法解码这张图片，请先导出为 JPG（长边不超过 8000 像素）再试。",
+    );
+  }
+
+  try {
+    onStep?.("正在压缩背景图…");
+    const out = await encode(bitmap, 2560);
+    onStep?.("正在生成模糊占位图…");
+    return { ...out, blurDataUrl: makeBlur(bitmap) };
+  } finally {
+    bitmap.close();
+  }
+}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PhotoTile } from "@/components/photo-tile";
 import { SectionHeading } from "@/components/section-heading";
 import { listPublicCategories, listPublishedPhotos } from "@/lib/public-photos";
+import { getSiteBackground } from "@/lib/site-background";
 import { site } from "@/lib/site";
 
 export const instant = false;
@@ -22,20 +23,42 @@ const CATEGORY_GRADIENTS = [
 ];
 
 export default async function HomePage() {
-  const [featured, categories] = await Promise.all([
+  const [featured, categories, background] = await Promise.all([
     listPublishedPhotos({ limit: 6 }),
     listPublicCategories(),
+    getSiteBackground(),
   ]);
 
   return (
     <>
       {/* ---------- 主视觉 ---------- */}
       <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{ backgroundImage: heroBackground }}
-        />
+        {background ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={background.url}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+              style={
+                background.blurDataUrl
+                  ? {
+                      backgroundImage: `url(${background.blurDataUrl})`,
+                      backgroundSize: "cover",
+                    }
+                  : undefined
+              }
+            />
+            <div aria-hidden className="absolute inset-0 bg-black/40" />
+          </>
+        ) : (
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{ backgroundImage: heroBackground }}
+          />
+        )}
         <div
           aria-hidden
           className="absolute inset-0"

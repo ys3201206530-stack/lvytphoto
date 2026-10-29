@@ -41,7 +41,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <Link href="/admin/categories" className="text-muted transition-colors hover:text-paper">
           分类管理
         </Link>
-        <span className="text-faint">站点背景（下一步实现）</span>
+        <Link href="/admin/settings" className="text-muted transition-colors hover:text-paper">
+          站点背景
+        </Link>
       </nav>
 
       <div className="mt-10">{children}</div>
