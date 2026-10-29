@@ -30,7 +30,8 @@ export async function signUp(
   }
 
   const supabase = await createClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  // 结尾多余的斜杠会让确认邮件链接变成 https://...//account，这里统一去掉
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 
   const { data, error } = await supabase.auth.signUp({
     email,
