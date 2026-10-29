@@ -42,3 +42,7 @@ next-env.d.ts
 
 # 文件编辑工具的临时锁文件
 .dsh-ops-*.lock
+
+# 临时浏览器配置（截图/调试用）
+.chrome-cdp*
+mm*.png

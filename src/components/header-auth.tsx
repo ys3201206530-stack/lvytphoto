@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { UserGlyph } from "@/components/user-glyph";
 import { signOutAction } from "@/app/account/actions";
 import { avatarUrl, getSessionUser } from "@/lib/auth";
@@ -8,6 +9,8 @@ import { avatarUrl, getSessionUser } from "@/lib/auth";
  * 在服务端读取 Supabase Cookie，所以登录后立刻正确、不闪、也不依赖浏览器再请求一次。
  */
 export async function HeaderAuth() {
+  // 登录状态必须在每次请求时现算，不能参与预渲染（避免把游客状态烤进静态 HTML）
+  await connection();
   const session = await getSessionUser();
 
   if (!session) {

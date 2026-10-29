@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { signOut } from "./actions";
 
 export const instant = false;
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
+  // 后台必须请求时校验身份，不能被预渲染成静态页面
+  await connection();
   const { user, profile } = await requireAdmin();
 
   return (

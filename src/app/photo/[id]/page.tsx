@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
@@ -43,6 +44,8 @@ export default async function PhotoDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  // 详情页要读评论/点赞数，必须请求时渲染，不能进静态预渲染
+  await connection();
   if (!UUID_RE.test(id)) notFound();
 
   const photo = await getPublishedPhoto(id);
