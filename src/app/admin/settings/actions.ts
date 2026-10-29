@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 export type BackgroundResult = { ok: true } | { ok: false; error: string };
+export type AboutState = { error?: string; message?: string };
 
 const PATH_RE =
   /^site\/background-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -91,7 +92,42 @@ export async function setBackground(input: BackgroundInput): Promise<BackgroundR
   return { ok: true };
 }
 
-/** 恢复默认渐变背景，并删除已上传的背景文件。 */
+/** 保存“关于我”页面的正文与联系邮箱。 */
+export async function saveAbout(
+  _prevState: AboutState,
+  formData: FormData,
+): Promise<AboutState> {
+  const intro = String(formData.get("intro") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+
+  if (intro.length > 6000) {
+    return { error: "正文太长了，请控制在 6000 字以内。" };
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: "邮箱格式不正确，留空则不显示。" };
+  }
+
+  const supabase = await getAdminClient();
+  if (!supabase) return { error: "只有管理员可以修改关于页面。" };
+
+  const { error } = await supabase.from("site_settings").upsert(
+    {
+      key: "about",
+      value: { intro, email, updated_at: new Date().toISOString() },
+    },
+    { onConflict: "key" },
+  );
+
+  if (error) {
+    console.error("saveAbout failed:", error.message);
+    return { error: `保存失败：${error.message}` };
+  }
+
+  revalidatePath("/about");
+  revalidatePath("/admin/settings");
+  return { message: "已保存，去看看关于页面吧。" };
+}
+
 export async function clearBackground(): Promise<BackgroundResult> {
   const supabase = await getAdminClient();
   if (!supabase) return { ok: false, error: "只有管理员可以更换首页背景。" };
