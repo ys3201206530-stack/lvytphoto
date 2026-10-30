@@ -46,3 +46,6 @@ next-env.d.ts
 # 临时浏览器配置（截图/调试用）
 .chrome-cdp*
 mm*.png
+
+.chrome-*/
+prod-*.png
