@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   return {
     title: photo.title,
-    description: photo.description ?? `${photo.title} · lvyt.art 摄影作品`,
+    description: photo.description ?? `${photo.title} · lvyt.top 摄影作品`,
     openGraph: {
       title: photo.title,
       images: [{ url: publicPhotoUrl(photo.storagePath, "lg") }],
@@ -77,10 +77,12 @@ export default async function PhotoDetailPage({
         <img
           src={publicPhotoUrl(photo.storagePath, "lg")}
           srcSet={srcSet}
-          sizes="(max-width: 1024px) 100vw, 1200px"
+          sizes="(max-width: 1024px) 100vw, 1280px"
           width={photo.width}
           height={photo.height}
           alt={photo.title}
+          fetchPriority="high"
+          decoding="async"
           className="max-h-[78vh] w-auto max-w-full object-contain"
         />
       </div>
