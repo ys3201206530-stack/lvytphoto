@@ -12,6 +12,7 @@ import { publicPhotoUrl } from "@/lib/photo-url";
 import { LikeButton } from "@/components/like-button";
 import { CommentForm } from "@/components/comment-form";
 import { CommentList } from "@/components/comment-list";
+import { PhotoZoom } from "@/components/photo-zoom";
 
 export const instant = false;
 
@@ -73,17 +74,13 @@ export default async function PhotoDetailPage({
       </Link>
 
       <div className="mt-6 flex w-full items-center justify-center bg-surface">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <PhotoZoom
           src={publicPhotoUrl(photo.storagePath, "lg")}
           srcSet={srcSet}
           sizes="(max-width: 1024px) 100vw, 1280px"
           width={photo.width}
           height={photo.height}
           alt={photo.title}
-          fetchPriority="high"
-          decoding="async"
-          className="max-h-[78vh] w-auto max-w-full object-contain"
         />
       </div>
 
