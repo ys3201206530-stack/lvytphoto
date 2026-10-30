@@ -32,6 +32,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <noscript>
           <style>{`#intro-curtain{display:none!important}`}</style>
         </noscript>
+        {/* 同一个标签页里只看一次入场动画：脚本在解析到幕布之前执行，不会闪 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem("lvyt-intro")==="1"){document.documentElement.classList.add("no-intro")}else{sessionStorage.setItem("lvyt-intro","1")}}catch(e){}`,
+          }}
+        />
         <IntroCurtain />
         <a
           href="#main"

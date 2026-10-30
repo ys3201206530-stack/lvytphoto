@@ -234,6 +234,11 @@
   }
 }
 
+/* 本标签页已经看过入场动画 */
+.no-intro .intro-curtain {
+  display: none;
+}
+
 /* 照片墙的细微颗粒纹理：让渐变占位更像真实照片 */
 .grain::after {
   content: "";
