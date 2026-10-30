@@ -41,10 +41,12 @@ export function PhotoTile({ photo, eager = false }: { photo: PublicPhoto; eager?
 
       <span className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent opacity-95 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100" />
 
-      <span className="pointer-events-none absolute inset-x-0 bottom-0 p-4 transition-all duration-500 md:translate-y-2 md:p-5 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
-        <span className="block text-sm tracking-wide text-paper">{photo.title}</span>
-        <span className="mt-1 block text-[10px] uppercase tracking-[0.22em] text-white/55">
-          {photo.category?.name ?? "未分类"}
+      <span className="pointer-events-none absolute inset-x-3 bottom-3 transition-all duration-500 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+        <span className="lv-glass block px-3 py-2.5" style={{ borderRadius: 10 }}>
+          <span className="block text-sm tracking-wide text-paper">{photo.title}</span>
+          <span className="mt-1 block text-[10px] uppercase tracking-[0.22em] text-white/55">
+            {photo.category?.name ?? "未分类"}
+          </span>
         </span>
       </span>
     </Link>

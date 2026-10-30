@@ -163,20 +163,35 @@ export default async function HomePage() {
               <Link
                 key={category.slug}
                 href={`/works?category=${encodeURIComponent(category.slug)}`}
-                className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden p-4"
+                className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden"
                 style={{
-                  backgroundImage: CATEGORY_GRADIENTS[index % CATEGORY_GRADIENTS.length],
+                  backgroundImage: category.coverUrl
+                    ? undefined
+                    : CATEGORY_GRADIENTS[index % CATEGORY_GRADIENTS.length],
                 }}
               >
-                <span className="absolute inset-0 bg-black/20 transition-colors duration-500 group-hover:bg-black/0" />
-                <span className="relative text-sm tracking-[0.18em] text-paper">
-                  {category.name}
-                </span>
-                {category.description ? (
-                  <span className="relative mt-1 line-clamp-2 text-[10px] leading-4 tracking-[0.14em] text-white/45">
-                    {category.description}
-                  </span>
+                {category.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={category.coverUrl}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                  />
                 ) : null}
+                <span className="absolute inset-0 bg-black/20 transition-colors duration-500 group-hover:bg-black/5" />
+
+                <span className="lv-glass relative m-3 block px-3 py-2.5" style={{ borderRadius: 12 }}>
+                  <span className="block text-sm tracking-[0.18em] text-paper">
+                    {category.name}
+                  </span>
+                  {category.description ? (
+                    <span className="mt-1 line-clamp-2 block text-[10px] leading-4 tracking-[0.14em] text-white/55">
+                      {category.description}
+                    </span>
+                  ) : null}
+                </span>
               </Link>
             ))}
           </div>

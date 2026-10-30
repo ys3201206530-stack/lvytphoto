@@ -106,6 +106,64 @@ export async function renameCategory(
   return { ok: true };
 }
 
+/** 设置分类招牌图（图片已由浏览器直传到 photos 桶）。 */
+export async function setCategoryCover(
+  id: string,
+  storagePath: string,
+): Promise<CategoryResult> {
+  const ctx = await getAdminContext();
+  if (!ctx.ok) return ctx;
+  if (!UUID_RE.test(id)) return { ok: false, error: "分类编号不正确。" };
+
+  if (!/^category\/[0-9a-f-]{36}$/i.test(storagePath)) {
+    return { ok: false, error: "招牌图地址不正确。" };
+  }
+
+  const { error } = await ctx.supabase
+    .from("categories")
+    .update({ cover_path: storagePath })
+    .eq("id", id);
+
+  if (error) {
+    console.error("setCategoryCover failed:", error.message);
+    return { ok: false, error: `保存失败：${error.message}` };
+  }
+
+  revalidateCategories();
+  return { ok: true };
+}
+
+/** 移除分类招牌图，并从存储里删掉文件。 */
+export async function clearCategoryCover(id: string): Promise<CategoryResult> {
+  const ctx = await getAdminContext();
+  if (!ctx.ok) return ctx;
+  if (!UUID_RE.test(id)) return { ok: false, error: "分类编号不正确。" };
+
+  const { data } = await ctx.supabase
+    .from("categories")
+    .select("cover_path")
+    .eq("id", id)
+    .maybeSingle<{ cover_path: string | null }>();
+
+  const { error } = await ctx.supabase
+    .from("categories")
+    .update({ cover_path: null })
+    .eq("id", id);
+
+  if (error) {
+    console.error("clearCategoryCover failed:", error.message);
+    return { ok: false, error: "移除失败，请稍后重试。" };
+  }
+
+  const oldPath = data?.cover_path;
+  if (oldPath) {
+    await ctx.supabase.storage.from("photos").remove([`${oldPath}-md.webp`]);
+  }
+
+  revalidateCategories();
+  return { ok: true };
+}
+
 /** 删除分类；该分类下的作品由数据库外键自动变成“未分类”。 */
 export async function deleteCategory(id: string): Promise<CategoryResult> {
   const ctx = await getAdminContext();

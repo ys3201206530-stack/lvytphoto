@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { publicPhotoUrl } from "@/lib/photo-url";
+import { CategoryCovers, type CoverItem } from "./category-covers";
 import { CategoryManager, type CategoryItem } from "./category-manager";
 
 export const instant = false;
@@ -10,6 +12,7 @@ type CategoryRow = {
   slug: string;
   name: string;
   sort_order: number;
+  cover_path?: string | null;
   photos: { count: number }[] | null;
 };
 
@@ -17,7 +20,7 @@ export default async function CategoriesPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("categories")
-    .select("id, slug, name, sort_order, photos(count)")
+    .select("*, photos(count)")
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
@@ -37,6 +40,12 @@ export default async function CategoriesPage() {
     photoCount: row.photos?.[0]?.count ?? 0,
   }));
 
+  const coverItems: CoverItem[] = ((data ?? []) as CategoryRow[]).map((row) => ({
+    id: row.id,
+    name: row.name,
+    coverUrl: row.cover_path ? publicPhotoUrl(row.cover_path, "md") : null,
+  }));
+
   return (
     <div className="space-y-8">
       <div>
@@ -48,6 +57,16 @@ export default async function CategoriesPage() {
       </div>
 
       <CategoryManager categories={categories} />
+
+      <section className="border-t border-line pt-8">
+        <h3 className="font-serif text-lg tracking-wide text-paper">分类招牌图</h3>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+          给每个分类传一张代表作品，会显示在首页的「按分类浏览」卡片上。不传就继续用默认渐变。
+        </p>
+        <div className="mt-5">
+          <CategoryCovers items={coverItems} />
+        </div>
+      </section>
     </div>
   );
 }

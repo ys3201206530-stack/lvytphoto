@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { publicPhotoUrl } from "@/lib/photo-url";
 
 export type PublicPhoto = {
   id: string;
@@ -17,6 +18,7 @@ export type PublicCategory = {
   slug: string;
   name: string;
   description: string | null;
+  coverUrl: string | null;
 };
 
 type PhotoRow = {
@@ -109,17 +111,35 @@ export async function getPublishedPhoto(id: string): Promise<PublicPhoto | null>
 /** 前台分类列表，按排序值升序。 */
 export async function listPublicCategories(): Promise<PublicCategory[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const withCover = await supabase
     .from("categories")
-    .select("slug, name, description")
+    .select("slug, name, description, cover_path")
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
-  if (error) {
-    console.error("listPublicCategories failed:", error.message);
+  // 还没执行 0005 迁移时数据库没有 cover_path 列，回退到不带招牌图的查询
+  const result = withCover.error
+    ? await supabase
+        .from("categories")
+        .select("slug, name, description")
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true })
+    : withCover;
+
+  if (result.error) {
+    console.error("listPublicCategories failed:", result.error.message);
     return [];
   }
-  return (data ?? []) as PublicCategory[];
+
+  return (result.data ?? []).map((row) => ({
+    slug: row.slug as string,
+    name: row.name as string,
+    description: (row.description as string | null) ?? null,
+    coverUrl:
+      "cover_path" in row && row.cover_path
+        ? publicPhotoUrl(row.cover_path as string, "md")
+        : null,
+  }));
 }
 
 export type PhotoComment = {

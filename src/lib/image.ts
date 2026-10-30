@@ -165,6 +165,33 @@ export async function prepareBackground(
   }
 }
 
+/** 分类招牌图：最长边 1280，够卡片用，文件更小。 */
+export async function prepareCategoryCover(
+  file: File,
+  onStep?: (label: string) => void,
+): Promise<PreparedBackground> {
+  assertUsableFile(file);
+
+  onStep?.("正在读取图片…");
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  } catch {
+    throw new Error(
+      "浏览器无法解码这张图片，请先导出为 JPG（长边不超过 8000 像素）再试。",
+    );
+  }
+
+  try {
+    onStep?.("正在压缩招牌图…");
+    const out = await encode(bitmap, 1280);
+    onStep?.("正在生成模糊占位图…");
+    return { ...out, blurDataUrl: makeBlur(bitmap) };
+  } finally {
+    bitmap.close();
+  }
+}
+
 /** 头像：居中裁成正方形，512px WebP。 */
 export async function prepareAvatar(file: File): Promise<Blob> {
   assertUsableFile(file);
