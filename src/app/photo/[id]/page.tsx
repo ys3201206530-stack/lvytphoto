@@ -73,7 +73,10 @@ export default async function PhotoDetailPage({
         ← 全部作品
       </Link>
 
-      <div className="mt-6 flex w-full items-center justify-center bg-surface">
+      <div
+        className="lv-glass mt-6 flex w-full items-center justify-center bg-surface p-2"
+        style={{ borderRadius: 18 }}
+      >
         <PhotoZoom
           src={publicPhotoUrl(photo.storagePath, "lg")}
           srcSet={srcSet}
