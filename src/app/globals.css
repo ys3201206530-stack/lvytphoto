@@ -181,56 +181,56 @@
   animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* 首屏入场动画 */
-@keyframes intro-brand {
-  from {
+/* 首屏入场动画（纯 CSS，不依赖 JS 水合） */
+.intro-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0b0b0c;
+  will-change: transform;
+  animation: curtain-lift 2.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+.intro-content {
+  animation: intro-content 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes curtain-lift {
+  0%,
+  62% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes intro-content {
+  0% {
     opacity: 0;
     transform: translateY(10px);
-    letter-spacing: 0.62em;
   }
-  to {
+  20% {
     opacity: 1;
     transform: translateY(0);
-    letter-spacing: 0.5em;
   }
-}
-
-@keyframes intro-line {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@keyframes intro-caption {
-  from {
-    opacity: 0;
-  }
-  to {
+  56% {
     opacity: 1;
+    transform: translateY(0);
   }
-}
-
-.intro-brand {
-  animation: intro-brand 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.intro-line {
-  transform-origin: center;
-  animation: intro-line 0.75s 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.intro-caption {
-  animation: intro-caption 0.7s 0.5s ease both;
+  78%,
+  100% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-brand,
-  .intro-line,
-  .intro-caption {
-    animation: none;
+  .intro-curtain {
+    display: none;
   }
 }
 
