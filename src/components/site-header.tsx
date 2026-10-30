@@ -47,10 +47,8 @@ export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
       <header
         style={{ zIndex: 70 }}
         className={`fixed inset-x-0 top-0 transition-colors duration-300 ${
-        solid
-          ? "border-b border-line bg-ink/95 md:bg-ink/80 md:backdrop-blur-md"
-          : "border-b border-transparent"
-      }`}
+          solid ? "lv-glass-bar" : "border-b border-transparent"
+        }`}
     >
       <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-5 md:h-[72px] md:px-10">
         <Link

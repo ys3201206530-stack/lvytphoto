@@ -31,10 +31,9 @@ export default async function WorksPage({
       <nav className="mt-10 -mx-5 flex gap-2 overflow-x-auto border-t border-line px-5 pt-6 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
         <Link
           href="/works"
-          className={`shrink-0 whitespace-nowrap border px-4 py-2 text-xs tracking-[0.12em] transition-colors ${
-            active
-              ? "border-line text-muted hover:border-line-strong hover:text-paper"
-              : "border-accent text-accent"
+          style={active ? undefined : { borderColor: "rgba(200, 169, 126, 0.55)" }}
+          className={`lv-glass lv-glass-pill shrink-0 whitespace-nowrap px-4 py-2 text-xs tracking-[0.12em] transition-colors ${
+            active ? "text-muted hover:text-paper" : "text-accent"
           }`}
         >
           全部
@@ -45,10 +44,13 @@ export default async function WorksPage({
             <Link
               key={item.slug}
               href={`/works?category=${encodeURIComponent(item.slug)}`}
-              className={`shrink-0 whitespace-nowrap border px-4 py-2 text-xs tracking-[0.12em] transition-colors ${
+              style={
                 isActive
-                  ? "border-accent text-accent"
-                  : "border-line text-muted hover:border-line-strong hover:text-paper"
+                  ? { borderColor: "rgba(200, 169, 126, 0.55)" }
+                  : undefined
+              }
+              className={`lv-glass lv-glass-pill shrink-0 whitespace-nowrap px-4 py-2 text-xs tracking-[0.12em] transition-colors ${
+                isActive ? "text-accent" : "text-muted hover:text-paper"
               }`}
             >
               {item.name}

@@ -98,13 +98,14 @@ export default async function HomePage() {
           >
             <Link
               href="/works"
-              className="inline-flex h-12 items-center justify-center border border-accent px-8 text-[13px] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-[#16130e]"
+              style={{ borderColor: "rgba(200, 169, 126, 0.5)" }}
+              className="lv-glass lv-glass-pill inline-flex h-12 items-center justify-center px-8 text-[13px] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-[#16130e]"
             >
               浏览作品
             </Link>
             <Link
               href="/about"
-              className="inline-flex h-12 items-center justify-center px-6 text-[13px] tracking-[0.18em] text-white/70 transition-colors hover:text-paper"
+              className="inline-flex h-12 items-center justify-center px-6 text-[13px] tracking-[0.18em] text-white/75 transition-colors hover:text-paper"
             >
               关于我
             </Link>
