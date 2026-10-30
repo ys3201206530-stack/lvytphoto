@@ -158,43 +158,62 @@ export default async function HomePage() {
         <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
           <SectionHeading index="02 — Categories" title="按分类浏览" />
 
-          {/* auto-fit：有多少分类就均分成多少列，总宽÷数量，不留空列 */}
+          {/* 每行最多 6 个，超出换行；不足 6 个时均分整行 */}
           <div
             className="mt-10 grid gap-3 sm:gap-4"
-            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
+            style={{
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(max(150px, calc((100% - 5rem) / 6)), 1fr))",
+            }}
           >
             {categories.map((category, index) => (
               <Link
                 key={category.slug}
                 href={`/works?category=${encodeURIComponent(category.slug)}`}
-                className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden"
-                style={{
-                  backgroundImage: category.coverUrl
-                    ? undefined
-                    : CATEGORY_GRADIENTS[index % CATEGORY_GRADIENTS.length],
-                }}
+                className="lv-glass group relative block aspect-[3/4]"
+                style={{ borderRadius: 16 }}
               >
-                {category.coverUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={category.coverUrl}
-                    alt=""
+                <span
+                  className="absolute inset-[6px] overflow-hidden"
+                  style={{ borderRadius: 11 }}
+                >
+                  <span
                     aria-hidden
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage: category.coverUrl
+                        ? undefined
+                        : CATEGORY_GRADIENTS[index % CATEGORY_GRADIENTS.length],
+                    }}
                   />
-                ) : null}
-                <span className="absolute inset-0 bg-black/20 transition-colors duration-500 group-hover:bg-black/5" />
-
-                <span className="lv-glass relative m-3 block px-3 py-2.5" style={{ borderRadius: 12 }}>
-                  <span className="block text-sm tracking-[0.18em] text-paper">
-                    {category.name}
-                  </span>
-                  {category.description ? (
-                    <span className="mt-1 line-clamp-2 block text-[10px] leading-4 tracking-[0.14em] text-white/55">
-                      {category.description}
-                    </span>
+                  {category.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={category.coverUrl}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    />
                   ) : null}
+                  <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+
+                  <span className="absolute inset-x-0 bottom-0 p-3">
+                    <span
+                      className="block text-sm tracking-[0.18em] text-paper"
+                      style={{ textShadow: "0 1px 14px rgba(0,0,0,0.65)" }}
+                    >
+                      {category.name}
+                    </span>
+                    {category.description ? (
+                      <span
+                        className="mt-1 line-clamp-2 block text-[10px] leading-4 tracking-[0.14em] text-white/65"
+                        style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}
+                      >
+                        {category.description}
+                      </span>
+                    ) : null}
+                  </span>
                 </span>
               </Link>
             ))}
