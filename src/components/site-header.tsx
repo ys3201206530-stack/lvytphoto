@@ -48,7 +48,7 @@ export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
         style={{ zIndex: 70 }}
         className={`fixed inset-x-0 top-0 transition-colors duration-300 ${
         solid
-          ? "border-b border-line bg-ink/85 backdrop-blur-md"
+          ? "border-b border-line bg-ink/95 md:bg-ink/80 md:backdrop-blur-md"
           : "border-b border-transparent"
       }`}
     >
@@ -118,7 +118,7 @@ export function SiteHeader({ authSlot }: { authSlot?: ReactNode }) {
     {open && (
       <div
         style={{ zIndex: 60 }}
-        className="fixed inset-0 bg-ink/95 backdrop-blur-xl md:hidden"
+        className="fixed inset-0 bg-ink/95 md:hidden"
       >
           <nav
             className="flex h-full flex-col justify-center gap-2 px-8"

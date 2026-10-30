@@ -14,7 +14,7 @@ export function PhotoTile({ photo, eager = false }: { photo: PublicPhoto; eager?
   return (
     <Link
       href={`/photo/${photo.id}`}
-      className="group relative mb-4 block w-full break-inside-avoid overflow-hidden bg-surface lg:mb-6"
+      className="group relative mb-4 block w-full break-inside-avoid overflow-hidden bg-surface [content-visibility:auto] lg:mb-6"
       style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
     >
       {photo.blurDataUrl ? (
