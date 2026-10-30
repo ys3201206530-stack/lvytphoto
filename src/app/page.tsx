@@ -158,7 +158,11 @@ export default async function HomePage() {
         <div className="mx-auto w-full max-w-[1440px] px-5 md:px-10">
           <SectionHeading index="02 — Categories" title="按分类浏览" />
 
-          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+          {/* auto-fit：有多少分类就均分成多少列，总宽÷数量，不留空列 */}
+          <div
+            className="mt-10 grid gap-3 sm:gap-4"
+            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
+          >
             {categories.map((category, index) => (
               <Link
                 key={category.slug}
