@@ -181,6 +181,59 @@
   animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* 首屏入场动画 */
+@keyframes intro-brand {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    letter-spacing: 0.62em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0.5em;
+  }
+}
+
+@keyframes intro-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes intro-caption {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.intro-brand {
+  animation: intro-brand 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-line {
+  transform-origin: center;
+  animation: intro-line 0.75s 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-caption {
+  animation: intro-caption 0.7s 0.5s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-brand,
+  .intro-line,
+  .intro-caption {
+    animation: none;
+  }
+}
+
 /* 照片墙的细微颗粒纹理：让渐变占位更像真实照片 */
 .grain::after {
   content: "";

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
 import { HeaderAuth } from "@/components/header-auth";
+import { IntroCurtain } from "@/components/intro-curtain";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
@@ -28,6 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="zh-CN" className="h-full">
       <body className="flex min-h-full flex-col bg-ink text-paper antialiased">
+        <noscript>
+          <style>{`#intro-curtain{display:none!important}`}</style>
+        </noscript>
+        <IntroCurtain />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-paper focus:px-4 focus:py-2 focus:text-sm focus:text-ink"
